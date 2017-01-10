@@ -1,5 +1,6 @@
-import requests
 import datetime
+import urllib2
+import json
 
 KIKAR_API_PATH = 'http://kikar.org/api/v1/facebook_status/'
 
@@ -10,13 +11,13 @@ def get_yesterday():
 
 
 def request_statuses():
-    params = {'is_current': 'true',
-              'published__gte': get_yesterday()
-              }
-    res = requests.get(KIKAR_API_PATH, params=params)
-    return res.json()
+    url = KIKAR_API_PATH + '?is_current=true&published__gte=' + get_yesterday()
+    res = urllib2.urlopen(url)
+    return json.loads(res.read())
 
 
-def get_statuses_content():
+def get_statuses_content(num_of_statuses=None):
+    print('here')
     response = request_statuses()
-    return [status['content'] for status in response['objects']]
+    return [status['content'] for status in
+            response['objects'][:num_of_statuses]]
