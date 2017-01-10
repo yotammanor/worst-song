@@ -1,4 +1,6 @@
 from flask import Flask
+import status_fetcher
+
 app = Flask(__name__)
 app.config['DEBUG'] = True
 
@@ -9,7 +11,8 @@ app.config['DEBUG'] = True
 @app.route('/')
 def hello():
     """Return a friendly HTTP greeting."""
-    return 'Hello World Again!'
+    statuses = status_fetcher.get_statuses_content()[:5]
+    return '\n'.join(statuses)
 
 
 @app.errorhandler(404)
