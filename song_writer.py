@@ -5,13 +5,15 @@ import random
 import logging
 import re
 
+MAX_LEN_OF_ORIGINAL_SENTENCE = 50
+
 DEFAULT_NUM_OF_WORDS_IN_SONG = 50
 MIN_LENGTH_OF_SENTENCE = 2
 MAX_LEN_OF_ROW = 30
 DEFAULT_NUM_OF_VERSES = 3
 MAX_LEN_OF_TITLE_ROW = 4
 
-STRUCTURE_OF_LAST_ROW = {1: [1], 2: [1, 1], 3: [1, 1, 1], 4: [2, 1, 1],
+STRUCTURE_OF_LAST_ROW = {0: [], 1: [1], 2: [1, 1], 3: [1, 1, 1], 4: [2, 1, 1],
                          5: [3, 1, 1], 6: [3, 1, 1, 1], 7: [3, 2, 1, 1],
                          8: [4, 2, 1, 1], 9: [4, 3, 1, 1], 10: [5, 3, 1, 1]}
 
@@ -19,7 +21,7 @@ STRUCTURE_OF_LAST_ROW = {1: [1], 2: [1, 1], 3: [1, 1, 1], 4: [2, 1, 1],
 class SongWriter(object):
     def __init__(self, material):
         self.material = material
-        self.song = ''
+        self.song = u''
 
     def write(self):
         self.randomize_song_from_sentences()
@@ -31,9 +33,9 @@ class SongWriter(object):
         first_row = first_row.strip(). \
             replace(u'.', u''). \
             replace(u'،', u''). \
-            replace(',', ''). \
-            replace(':', '')
-        return ' '.join(first_row.split(' ')[:MAX_LEN_OF_TITLE_ROW])
+            replace(u',', u''). \
+            replace(u':', u'')
+        return u' '.join(first_row.split(u' ')[:MAX_LEN_OF_TITLE_ROW])
 
     def split_song_to_lines(self):
         self.splitlines_on_symbol(u',', threshold_percent=80)
@@ -140,10 +142,13 @@ class SongWriter(object):
         while len([x for x in self.song.split(' ') if
                    x.strip() and x.strip().isalpha()]) <= len_of_song:
             candidate_sentence = random.choice(bag_of_sentences)
-            if len(candidate_sentence) > 100:
-                self.song += candidate_sentence.split(',')[0] + ','
+            if len(candidate_sentence) > MAX_LEN_OF_ORIGINAL_SENTENCE:
+                self.song += candidate_sentence.split(',')[0] + ', '
             else:
                 self.song += candidate_sentence
+
+        if self.song[-1] == ',':
+            self.song = self.song[:-1]
 
     def _material_as_bag_of_words(self):
         words = []
