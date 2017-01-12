@@ -28,10 +28,10 @@ class SongWriter(object):
 
     def get_song_title(self):
         first_row = self.song.splitlines()[0]
-        first_row = first_row.strip().\
-            replace(u'.', u'').\
-            replace(u'،', u'').\
-            replace(',', '').\
+        first_row = first_row.strip(). \
+            replace(u'.', u''). \
+            replace(u'،', u''). \
+            replace(',', ''). \
             replace(':', '')
         return ' '.join(first_row.split(' ')[:MAX_LEN_OF_TITLE_ROW])
 
@@ -45,7 +45,7 @@ class SongWriter(object):
         self.split_to_verses()
         self.split_last_sentence()
 
-    def attempt_word_repitiion(self):
+    def attempt_word_repetition(self):
         pass
 
     def split_to_verses(self):
@@ -139,7 +139,11 @@ class SongWriter(object):
         bag_of_sentences = self._material_as_bag_of_sentences()
         while len([x for x in self.song.split(' ') if
                    x.strip() and x.strip().isalpha()]) <= len_of_song:
-            self.song += random.choice(bag_of_sentences)
+            candidate_sentence = random.choice(bag_of_sentences)
+            if len(candidate_sentence) > 100:
+                self.song += candidate_sentence.split(',')[0] + ','
+            else:
+                self.song += candidate_sentence
 
     def _material_as_bag_of_words(self):
         words = []
