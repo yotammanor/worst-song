@@ -17,7 +17,6 @@ def request_statuses():
 
 
 def get_statuses_content(num_of_statuses=None):
-    print('here')
     response = request_statuses()
     return [status['content'] for status in
             response['objects'][:num_of_statuses]]
