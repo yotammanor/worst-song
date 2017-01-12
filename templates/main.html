@@ -3,15 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <title>השיר הגרוע בעולם (ליום זה)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js "></script>
+    <script src="https://use.fontawesome.com/e32660f798.js"></script>
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r;
+            i[r] = i[r] || function () {
+                    (i[r].q = i[r].q || []).push(arguments)
+                }, i[r].l = 1 * new Date();
+            a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0];
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-90265917-1', 'auto');
+        ga('send', 'pageview');
+
+    </script>
 </head>
 <body dir="rtl">
-<h2>{{ title }} / חברי וחברות הכנסת ה-20 </h2>
-<p>{{ song|safe }}</p>
+<h2 id="song-title">כותב לך שיר...<i class="fa fa-spinner fa-spin"></i></h2>
+<p id="song-content"></p>
 <br><br><br>
 <hr>
-<footer><i><br> הטקסט כולו לקוח מתוך סטאטוסים של חברי הכנסת ה-20, אשר נכתבו ביממה האחרונה, <br>ונאספו באמצעות פרויקט <a
-        href="http://www.kikar.org">כיכר המדינה</a> של <a href="https://www.hasadna.org.il">הסדנא לידע ציבורי</a> .<br><br>
+<footer><i><br> הטקסט כולו לקוח מתוך סטאטוסים של חברי הכנסת ה-20, אשר נכתבו
+    ביממה האחרונה, <br>ונאספו באמצעות פרויקט <a
+            href="http://www.kikar.org">כיכר המדינה</a> של <a
+            href="https://www.hasadna.org.il">הסדנא לידע ציבורי</a> .<br><br>
     עזר להביא לאור - יותם מנור, 2017.
 </i></footer>
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            url: "/get_song/",
+            type: "GET",
+            dataType: 'json',
+            success: function (data, status) {
+                $('#song-title').html(data['title']);
+                $('#song-content').html(data['content']);
+            }
+        });
+    });
+</script>
 </body>
 </html>

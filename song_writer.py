@@ -45,6 +45,9 @@ class SongWriter(object):
         self.split_to_verses()
         self.split_last_sentence()
 
+    def attempt_word_repitiion(self):
+        pass
+
     def split_to_verses(self):
         split_song = ''
         song_parts = [x.strip() for x in self.song.split('\n') if
