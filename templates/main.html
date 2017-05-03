@@ -30,7 +30,7 @@
 <script>
     $(document).ready(function () {
         $.ajax({
-            url: "/get_song/",
+            url: window.location.search + "get_song/",
             type: "GET",
             dataType: 'json',
             success: function (data, status) {

@@ -13,6 +13,7 @@ app.config['DEBUG'] = True
 # Note: We don't need to call run() since our application is embedded within
 # the App Engine WSGI application server.
 
+
 @app.route('/get_song/', methods=['GET'])
 def get_song():
     statuses = status_fetcher.get_statuses_content()
@@ -35,3 +36,16 @@ def main():
 def page_not_found(e):
     """Return a custom 404 error."""
     return 'Sorry, nothing at this URL.', 404
+
+
+@app.before_request
+def add_trailing():
+    from flask import redirect, request
+
+    request_path = request.path
+    if not request_path.endswith('/'):
+        return redirect(request_path[:-1] + '/')
+
+
+if __name__ == "__main__":
+    app.run()
