@@ -5,6 +5,8 @@ import random
 import logging
 import re
 
+logger = logging.getLogger(__name__)
+
 MAX_LEN_OF_ORIGINAL_SENTENCE = 50
 
 DEFAULT_NUM_OF_WORDS_IN_SONG = 50
@@ -28,8 +30,9 @@ class SongWriter(object):
         self.split_song_to_lines()
         return self.song
 
-    def get_song_title(self):
-        first_row = self.song.splitlines()[0]
+    @classmethod
+    def get_song_title(cls, song):
+        first_row = song.splitlines()[0]
         first_row = first_row.strip(). \
             replace(u'.', u''). \
             replace(u'،', u''). \

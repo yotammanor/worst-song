@@ -1,13 +1,22 @@
 # -*- coding: utf-8 -*-
 
+import json
+import hashlib
+
 from flask import Flask
 from flask import render_template
+from flask.ext.dotenv import DotEnv
+from flask_redis import FlaskRedis
+
 import status_fetcher
 import song_writer
-import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-app.config['DEBUG'] = True
+env = DotEnv(app)
+redis_store = FlaskRedis(app, strict=False)
 
 
 # Note: We don't need to call run() since our application is embedded within
@@ -15,21 +24,48 @@ app.config['DEBUG'] = True
 
 
 @app.route('/get_song/', methods=['GET'])
-def get_song():
+def get_new_song():
     statuses = status_fetcher.get_statuses_content()
     writer = song_writer.SongWriter(material=statuses)
     song = writer.write()
-    title = writer.get_song_title()
+    song_hash = hash_song(song)
+    success = redis_store.set(song_hash, song.encode('utf8'))
+    logger.info("save song:", success)
+    return render_song(song, writer, song_hash, is_new=True)
+
+
+@app.route('/<song_hash>/get_song/', methods=['GET'])
+def get_hashed_song(song_hash):
+    song = redis_store.get("{}".format(song_hash)).decode('utf8')
+    writer = song_writer.SongWriter(material=[])
+    return render_song(song, writer, song_hash, is_new=False)
+
+
+def render_song(song, writer, link, is_new):
+    title = writer.get_song_title(song)
     song = song.replace('\n', '<br>')
     return json.dumps(
-        {'title': title + u' / חברי וחברות הכנסת ה-20', 'content': song})
+        {'title': title + u' / חברי וחברות הכנסת ה-20', 'content': song,
+         'link': str(link),
+         'is_new': is_new})
+
+
+def hash_song(song):
+    sha1 = hashlib.sha1()
+    sha1.update(song.encode('utf8'))
+    return sha1.hexdigest()
 
 
 @app.route('/', methods=['GET'])
 def main():
     """Return a friendly HTTP greeting."""
     return render_template('main.html')
-    # return u'<p>song:<br>{}</p>'.format(song)
+
+
+@app.route('/<song_hash>/', methods=['GET'])
+def existing_song(song_hash):
+    """Return a friendly HTTP greeting."""
+    return render_template('main.html')
 
 
 @app.errorhandler(404)
@@ -44,7 +80,7 @@ def add_trailing():
 
     request_path = request.path
     if not request_path.endswith('/'):
-        return redirect(request_path[:-1] + '/')
+        return redirect(request_path + '/')
 
 
 if __name__ == "__main__":
