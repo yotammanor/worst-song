@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import os
 import json
 import hashlib
 
@@ -14,8 +14,17 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
+def _env_file():
+    if 'SERVERTYPE' in os.environ and os.environ['SERVERTYPE'] == 'AWS Lambda':
+        return os.path.join(os.getcwd(), '.prod.env')
+    return os.path.join(os.getcwd(), '.env')
+
+
 app = Flask(__name__)
-env = DotEnv(app)
+env = DotEnv()
+env_file = _env_file()
+env.init_app(app, env_file=env_file)
 redis_store = FlaskRedis(app, strict=False)
 
 
