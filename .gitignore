@@ -136,3 +136,7 @@ ENV/
 ### AppEngine template
 # Google App Engine generated folder
 appengine-generated/
+/.prod.env
+dump.rdb
+worst-song-dev-1493658506.zip
+zappa_settings.json
