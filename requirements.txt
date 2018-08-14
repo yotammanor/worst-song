@@ -6,3 +6,5 @@
 # Note: The `lib` directory is added to `sys.path` by `appengine_config.py`.
 Flask==0.10
 numpy==1.7.2
+Flask-Redis==0.3.0
+Flask-DotEnv==0.1.1
